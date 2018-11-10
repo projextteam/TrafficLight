@@ -1,0 +1,91 @@
+<?xml version="1.0" encoding="utf-8"?>
+<android.support.constraint.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:background="@drawable/background_black_window"
+        android:orientation="vertical"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent">
+
+        <TextView
+            android:id="@+id/textView2"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:gravity="center"
+            android:paddingTop="30dp"
+            android:text="處理事件"
+            android:textSize="28sp"
+            android:textStyle="bold" />
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:gravity="center"
+            android:orientation="horizontal">
+
+            <android.support.v7.widget.AppCompatImageButton
+                android:id="@+id/extend"
+                android:layout_width="96dp"
+                android:layout_height="96dp"
+                android:layout_gravity="center"
+                android:layout_weight="1"
+                android:background="@android:color/transparent"
+                android:paddingLeft="20dp"
+                android:paddingTop="20dp"
+                android:paddingBottom="10dp"
+                android:scaleType="fitCenter"
+                app:srcCompat="@drawable/btn_extend_selector" />
+
+            <android.support.v7.widget.AppCompatImageButton
+                android:id="@+id/delete"
+                android:layout_width="96dp"
+                android:layout_height="96dp"
+                android:layout_weight="1"
+                android:background="@android:color/transparent"
+                android:paddingTop="20dp"
+                android:paddingRight="20dp"
+                android:paddingBottom="10dp"
+                android:scaleType="fitCenter"
+                app:srcCompat="@drawable/btn_deleted_selector" />
+
+        </LinearLayout>
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            tools:layout_editor_absoluteY="567dp">
+
+            <TextView
+                android:id="@+id/extendTX"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:gravity="center"
+                android:paddingLeft="20dp"
+                android:paddingBottom="30dp"
+                android:text="延長事件"
+                android:textColor="@android:color/white" />
+
+            <TextView
+                android:id="@+id/deleteTX"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:gravity="center"
+                android:paddingRight="20dp"
+                android:paddingBottom="30dp"
+                android:text="事件解決"
+                android:textColor="@android:color/white" />
+        </LinearLayout>
+
+    </LinearLayout>
+
+
+</android.support.constraint.ConstraintLayout>

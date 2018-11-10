@@ -1,0 +1,39 @@
+<?xml version="1.0" encoding="utf-8"?>
+<PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android"
+    android:title="Settings">
+
+    <PreferenceCategory android:title="一般事件提醒">
+
+        <SwitchPreference
+            android:defaultValue="true"
+            android:key="main_cut"
+            android:title="主畫面事件插播" />
+        <ListPreference
+            android:defaultValue="10"
+            android:entries="@array/second_opt"
+            android:entryValues="@array/second_value"
+            android:key="remind_second"
+            android:title="提醒秒數" />
+        <ListPreference
+            android:defaultValue="2000"
+            android:entries="@array/accuracy_opt"
+            android:entryValues="@array/accuracy_value"
+            android:key="remind_accuracy"
+            android:title="事件位置精確度" />
+        <ListPreference
+            android:defaultValue="750"
+            android:entries="@array/frequency_opt"
+            android:entryValues="@array/frequency_value"
+            android:key="remind_frequency"
+            android:title="事件更新頻率" />
+    </PreferenceCategory>
+
+    <PreferenceCategory android:title="緊急事件提醒">
+
+        <SwitchPreference
+            android:defaultValue="true"
+            android:key="pip_cut"
+            android:title="子母畫面插播提醒" />
+    </PreferenceCategory>
+
+</PreferenceScreen>
