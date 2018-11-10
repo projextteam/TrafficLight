@@ -9,7 +9,6 @@ import android.content.res.Configuration;
 import android.database.Cursor;
 import android.location.Address;
 import android.location.Geocoder;
-import android.location.Location;
 import android.os.Build;
 import android.os.Handler;
 import android.os.IBinder;
@@ -22,7 +21,6 @@ import android.util.Rational;
 import android.view.View;
 import android.view.animation.Interpolator;
 import android.view.animation.LinearInterpolator;
-import android.widget.Button;
 import android.widget.ImageButton;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -39,7 +37,6 @@ import com.google.android.gms.maps.model.MarkerOptions;
 
 import java.io.IOException;
 import java.text.DecimalFormat;
-import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.List;
@@ -393,7 +390,14 @@ public class ReportActivity extends FragmentActivity implements OnMapReadyCallba
                                 .icon(BitmapDescriptorFactory.fromResource(R.drawable.direction))
                                 .position(new LatLng(mMyService.getCurrentLocation().getLatitude(), mMyService.getCurrentLocation().getLongitude()))
                                 .flat(true));
-                        setting_meaker();
+                        setting_marker();
+
+                        if (mChosenMarker != null) {
+                            mChosenMarker = mMap.addMarker(new MarkerOptions()
+                                    .position(mChosenLatLng)
+                                    .flat(true)
+                            );
+                        }
                         break;
                 }
 
@@ -416,7 +420,7 @@ public class ReportActivity extends FragmentActivity implements OnMapReadyCallba
                 setMyLocation();
 
                 //設定所有marker
-                setting_meaker();
+                setting_marker();
 
                 /* 判斷是否進入 Picture-in-picture 模式 */
                 if (mInPipMode) {
@@ -495,7 +499,7 @@ public class ReportActivity extends FragmentActivity implements OnMapReadyCallba
         }
 
         LatLng latLng = new LatLng(mMyService.getCurrentLocation().getLatitude(), mMyService.getCurrentLocation().getLongitude());
-        mMap.animateCamera(CameraUpdateFactory.newLatLngZoom(latLng, 15));
+        mMap.animateCamera(CameraUpdateFactory.newLatLngZoom(latLng, 16));
 
         if (mCurrentMarker == null) {
             mCurrentMarker = mMap.addMarker(new MarkerOptions()
@@ -570,7 +574,7 @@ public class ReportActivity extends FragmentActivity implements OnMapReadyCallba
         });
     }
 
-    private void setting_meaker()
+    private void setting_marker()
     {
         Cursor event = mMyService.getAllEvent();
 
