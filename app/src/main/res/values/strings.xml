@@ -1,0 +1,41 @@
+<resources>
+    <string name="app_name">TrafficLight</string>
+
+    <!-- 提醒秒數 -->
+    <string-array name="second_opt">
+        <item>10秒</item>
+        <item>5秒</item>
+        <item>靜音</item>
+    </string-array>
+    <string-array name="second_value">
+        <item>10</item>
+        <item>5</item>
+        <item>0</item>
+    </string-array>
+
+    <!-- 提醒精確度 -->
+    <string-array name="accuracy_opt">
+        <item>高</item>
+        <item>中</item>
+        <item>低</item>
+    </string-array>
+    <string-array name="accuracy_value">
+        <item>2000</item>
+        <item>1000</item>
+        <item>500</item>
+    </string-array>
+
+    <!-- 事件更新頻率 -->
+    <string-array name="frequency_opt">
+        <item>經常</item>
+        <item>偶爾</item>
+        <item>不常</item>
+    </string-array>
+    <string-array name="frequency_value">
+        <item>375</item>
+        <item>750</item>
+        <item>1500</item>
+    </string-array>
+
+
+</resources>
