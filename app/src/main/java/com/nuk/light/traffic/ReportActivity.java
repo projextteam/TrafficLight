@@ -9,6 +9,7 @@ import android.content.res.Configuration;
 import android.database.Cursor;
 import android.location.Address;
 import android.location.Geocoder;
+import android.location.Location;
 import android.os.Build;
 import android.os.Handler;
 import android.os.IBinder;
@@ -49,10 +50,6 @@ public class ReportActivity extends FragmentActivity implements OnMapReadyCallba
     /**
      * 外部使用
      */
-    public MyService getMyService() {
-        return mMyService;
-    }
-
     /* EventDialog2 會被 add_warning 擋到 */
     public void setUiVisibility(int id, int visibility) {
         findViewById(id).setVisibility(visibility);
@@ -60,23 +57,31 @@ public class ReportActivity extends FragmentActivity implements OnMapReadyCallba
 
     /* 切換 onClickListener */
     public void setMapClickable(boolean clickable) {
-        if (clickable) {
-            mMap.setOnMapClickListener(mMapClickListener);
-        } else {
-            mMap.setOnMapClickListener(null);
-        }
+        mMap.setOnMapClickListener(clickable ? mMapClickListener : null);
     }
 
-    public void chooseCurrentLocation() {
-        mChosenLatLng = new LatLng(mMyService.getCurrentLocation().getLatitude(), mMyService.getCurrentLocation().getLongitude());
+    /* 重設 ChosenMarker */
+    public void resetChosenMarker() {
         if (mChosenMarker != null) {
             mChosenMarker.setVisible(false);
             mChosenMarker = null;
         }
+    }
+
+    /* 選擇自己位置 */
+    public void chooseCurrentLocation() {
+        mChosenLatLng = new LatLng(mMyService.getCurrentLocation().getLatitude(), mMyService.getCurrentLocation().getLongitude());
+        resetChosenMarker();
         setMyLocation();
     }
 
+    /* 發送事件回 Server */
     public void sendEvent(final int category, final String content) {
+        /* 還未選擇任何位置 */
+        if (mChosenLatLng == null) {
+            Toast.makeText(this, "未選擇位置", Toast.LENGTH_LONG).show();
+            return;
+        }
 
         final SimpleDateFormat simpleDateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss", Locale.TAIWAN);
         final Date date = new Date();
@@ -100,8 +105,7 @@ public class ReportActivity extends FragmentActivity implements OnMapReadyCallba
             }
         }).start();
 
-        mChosenMarker.setVisible(false);
-        mChosenMarker = null;
+        resetChosenMarker();
     }
 
 
@@ -121,7 +125,7 @@ public class ReportActivity extends FragmentActivity implements OnMapReadyCallba
     private Marker mCurrentMarker;
     private Marker mEmergency;
     private Marker mChosenMarker;
-    private List<Marker> mEventMarker;
+    private List<Marker> mEventMarkers;
     private GoogleMap.InfoWindowAdapter mInfoWindowAdapter;
     private GoogleMap.OnMapClickListener mMapClickListener;
     private LatLng mChosenLatLng;
@@ -181,7 +185,7 @@ public class ReportActivity extends FragmentActivity implements OnMapReadyCallba
         mGeocoder = new Geocoder(this, Locale.TAIWAN);
 
         //事件Marker list
-        mEventMarker = new Vector<>();
+        mEventMarkers = new Vector<>();
 
         // Marker 自訂資訊頁面
         mInfoWindowAdapter = new GoogleMap.InfoWindowAdapter() {
@@ -383,21 +387,14 @@ public class ReportActivity extends FragmentActivity implements OnMapReadyCallba
                         break;
 
                     case Action.UPDATE_REPORT_MARKER:
-                        mMap.clear();
-                        mEventMarker.clear();
+                        //清除 事件Marker
+                        for (Marker eventMarker : mEventMarkers) {
+                            eventMarker.remove();
+                        }
 
-                        mMap.addMarker(new MarkerOptions()
-                                .icon(BitmapDescriptorFactory.fromResource(R.drawable.direction))
-                                .position(new LatLng(mMyService.getCurrentLocation().getLatitude(), mMyService.getCurrentLocation().getLongitude()))
-                                .flat(true));
+                        //新增 事件Marker
                         setting_marker();
 
-                        if (mChosenMarker != null) {
-                            mChosenMarker = mMap.addMarker(new MarkerOptions()
-                                    .position(mChosenLatLng)
-                                    .flat(true)
-                            );
-                        }
                         break;
                 }
 
@@ -574,8 +571,7 @@ public class ReportActivity extends FragmentActivity implements OnMapReadyCallba
         });
     }
 
-    private void setting_marker()
-    {
+    private void setting_marker() {
         Cursor event = mMyService.getAllEvent();
 
         // event 的欄位按照DB順序排列
@@ -598,7 +594,7 @@ public class ReportActivity extends FragmentActivity implements OnMapReadyCallba
                     category = "大型物掉落";
                     break;
             }
-            mEventMarker.add(mMap.addMarker(new MarkerOptions()
+            mEventMarkers.add(mMap.addMarker(new MarkerOptions()
                     .position(new LatLng(event.getDouble(1), event.getDouble(2)))
                     .snippet(category + ","
                             + event.getString(4) + ","

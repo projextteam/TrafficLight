@@ -454,7 +454,9 @@ public class MainActivity extends AppCompatActivity {
     protected void onStop() {
         super.onStop();
 
-        mMyService.setVisibility(TAG, false);
+        if (mMyService != null) {
+            mMyService.setVisibility(TAG, false);
+        }
     }
 
     @Override

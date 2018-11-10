@@ -517,10 +517,6 @@ public class MyService extends Service implements LocationListener {
                     {
                         Log.d(TAG,"No event update");
                         mIsDownloadDatabase = true;
-                        if(mUiHandler != null)
-                        {
-                            mUiHandler.sendEmptyMessage(Action.UPDATE_REPORT_MARKER);
-                        }
 
                     }else
                     {
@@ -529,6 +525,10 @@ public class MyService extends Service implements LocationListener {
                         mIsDownloadDatabase = true;
                         key_Event = mMyDB.insertEvent(response_Event);
 
+                        if(mUiHandler != null)
+                        {
+                            mUiHandler.sendEmptyMessage(Action.UPDATE_REPORT_MARKER);
+                        }
                     }
 
                     if (!mEmergency && jsonArray.length() != 0)

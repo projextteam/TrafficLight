@@ -14,10 +14,6 @@ import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import java.text.DecimalFormat;
-import java.text.SimpleDateFormat;
-import java.util.Date;
-
 public class EventDialog2 extends Fragment {
 
     public static final String TAG = "EventDialog2";
@@ -29,7 +25,6 @@ public class EventDialog2 extends Fragment {
     private EditText mEditText;
 
     private ReportActivity mReportActivity;
-    private MyService mMyService;
 
     private FragmentManager mFragmentManager;
 
@@ -84,16 +79,7 @@ public class EventDialog2 extends Fragment {
             public void onClick(View v) {
                 switch (v.getId()) {
                     case R.id.currentlocate:
-                        Location location = mMyService.getCurrentLocation();
-
-                        Toast toast = Toast.makeText(mReportActivity,location.getLatitude() + ", " + location.getLongitude(), Toast.LENGTH_LONG);
-                        toast.show();
-
                         mReportActivity.chooseCurrentLocation();
-
-                        //
-                        // TODO: User 要能知道已經選了此選項
-                        //
 
                         break;
                     case R.id.chooselocate:
@@ -112,10 +98,6 @@ public class EventDialog2 extends Fragment {
 
                         mReportActivity.sendEvent(mCategory, mEditText.getText().toString());
 
-                        //
-                        // TODO: 發送事件回 Server
-                        //
-
                         break;
                 }
             }
@@ -126,7 +108,6 @@ public class EventDialog2 extends Fragment {
             v.findViewById(id).setOnClickListener(onClickListener);
         }
 
-        mMyService = mReportActivity.getMyService();
         mFragmentManager = getFragmentManager();
 
         return v;
@@ -141,6 +122,8 @@ public class EventDialog2 extends Fragment {
     @Override
     public void onDestroy() {
         super.onDestroy();
+
         mReportActivity.setUiVisibility(R.id.addwarning, View.VISIBLE);
+        mReportActivity.resetChosenMarker();
     }
 }
