@@ -68,6 +68,9 @@ public class EventDialog2 extends Fragment {
             case 5:
                 vType.setImageResource(R.drawable.event_drop1);
                 break;
+            case 6:
+                vType.setImageResource(R.drawable.event_others1);
+                break;
             default:
                 break;
         }

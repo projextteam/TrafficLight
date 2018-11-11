@@ -135,95 +135,75 @@
         app:layout_constraintEnd_toEndOf="parent"
         app:srcCompat="@drawable/btn_setting_selector" />
 
-    <ImageView
-        android:id="@+id/police"
-        android:layout_width="40dp"
-        android:layout_height="40dp"
-        android:layout_marginTop="8dp"
-        android:layout_marginEnd="8dp"
-        android:layout_marginRight="8dp"
-        android:layout_marginBottom="8dp"
-        android:alpha="0.2"
-        app:layout_constraintBottom_toBottomOf="@+id/imageView2"
-        app:layout_constraintEnd_toEndOf="@+id/imageView2"
-        app:layout_constraintTop_toTopOf="@+id/imageView2"
-        app:srcCompat="@drawable/event_police1" />
-
-    <ImageView
-        android:id="@+id/drop"
-        android:layout_width="40dp"
-        android:layout_height="40dp"
-        android:layout_marginStart="8dp"
-        android:layout_marginLeft="8dp"
-        android:layout_marginTop="8dp"
-        android:layout_marginEnd="8dp"
-        android:layout_marginRight="8dp"
-        android:layout_marginBottom="8dp"
-        android:alpha="0.2"
-        app:layout_constraintBottom_toBottomOf="@+id/imageView2"
-        app:layout_constraintEnd_toStartOf="@+id/police"
-        app:layout_constraintStart_toEndOf="@+id/accident"
-        app:layout_constraintTop_toTopOf="@+id/imageView2"
-        app:srcCompat="@drawable/event_drop1" />
-
-    <ImageView
-        android:id="@+id/accident"
-        android:layout_width="40dp"
-        android:layout_height="40dp"
-        android:layout_marginStart="8dp"
-        android:layout_marginLeft="8dp"
-        android:layout_marginTop="8dp"
-        android:layout_marginEnd="8dp"
-        android:layout_marginRight="8dp"
-        android:layout_marginBottom="8dp"
-        android:alpha="0.2"
+    <LinearLayout
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
         app:layout_constraintBottom_toBottomOf="@+id/imageView2"
         app:layout_constraintEnd_toEndOf="@+id/imageView2"
         app:layout_constraintStart_toStartOf="@+id/imageView2"
-        app:layout_constraintTop_toTopOf="@+id/imageView2"
-        app:srcCompat="@drawable/event_acident1" />
+        app:layout_constraintTop_toTopOf="@+id/imageView2">
 
-    <ImageView
-        android:id="@+id/roadblock"
-        android:layout_width="40dp"
-        android:layout_height="40dp"
-        android:layout_marginStart="8dp"
-        android:layout_marginLeft="8dp"
-        android:layout_marginTop="8dp"
-        android:layout_marginEnd="8dp"
-        android:layout_marginRight="8dp"
-        android:layout_marginBottom="8dp"
-        android:alpha="0.2"
-        app:layout_constraintBottom_toBottomOf="@+id/imageView2"
-        app:layout_constraintEnd_toStartOf="@+id/accident"
-        app:layout_constraintStart_toEndOf="@+id/repair"
-        app:layout_constraintTop_toTopOf="@+id/imageView2"
-        app:srcCompat="@drawable/event_roadblock1" />
+        <ImageView
+            android:id="@+id/repair"
+            android:layout_width="40dp"
+            android:layout_height="40dp"
+            android:layout_marginLeft="10dp"
+            android:alpha="0.2"
+            app:srcCompat="@drawable/event_repari1" />
 
-    <ImageView
-        android:id="@+id/repair"
-        android:layout_width="40dp"
-        android:layout_height="40dp"
-        android:layout_marginStart="8dp"
-        android:layout_marginLeft="8dp"
-        android:layout_marginTop="8dp"
-        android:layout_marginBottom="8dp"
-        android:alpha="0.2"
-        app:layout_constraintBottom_toBottomOf="@+id/imageView2"
-        app:layout_constraintStart_toStartOf="@+id/imageView2"
-        app:layout_constraintTop_toTopOf="@+id/imageView2"
-        app:srcCompat="@drawable/event_repari1" />
+        <ImageView
+            android:id="@+id/roadblock"
+            android:layout_width="40dp"
+            android:layout_height="40dp"
+            android:layout_marginLeft="4dp"
+            android:alpha="0.2"
+            app:srcCompat="@drawable/event_roadblock1" />
+
+        <ImageView
+            android:id="@+id/accident"
+            android:layout_width="40dp"
+            android:layout_height="40dp"
+            android:layout_marginLeft="3dp"
+            android:alpha="0.2"
+            app:srcCompat="@drawable/event_acident1" />
+
+        <ImageView
+            android:id="@+id/police"
+            android:layout_width="40dp"
+            android:layout_height="40dp"
+            android:layout_marginLeft="4dp"
+            android:alpha="0.2"
+            app:srcCompat="@drawable/event_police1" />
+
+        <ImageView
+            android:id="@+id/drop"
+            android:layout_width="40dp"
+            android:layout_height="40dp"
+            android:layout_marginLeft="3dp"
+            android:alpha="0.2"
+            app:srcCompat="@drawable/event_drop1" />
+
+        <ImageView
+            android:id="@+id/others"
+            android:layout_width="40dp"
+            android:layout_height="40dp"
+            android:layout_marginLeft="3dp"
+            android:alpha="0.2"
+            app:srcCompat="@drawable/event_others1" />
+
+    </LinearLayout>
 
     <ImageView
         android:id="@+id/imageView2"
-        android:layout_width="233dp"
+        android:layout_width="278dp"
         android:layout_height="53dp"
-        android:layout_marginBottom="8dp"
-        android:layout_marginLeft="8dp"
         android:layout_marginStart="8dp"
+        android:layout_marginLeft="8dp"
+        android:layout_marginBottom="8dp"
         app:layout_constraintBottom_toTopOf="@+id/description"
-        app:layout_constraintStart_toStartOf="parent"
-        app:srcCompat="@drawable/events" />
+        app:layout_constraintStart_toStartOf="@+id/description"
+        app:srcCompat="@drawable/events_6" />
 
     <TextView
         android:id="@+id/description"

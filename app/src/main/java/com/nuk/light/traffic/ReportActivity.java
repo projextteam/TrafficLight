@@ -577,21 +577,31 @@ public class ReportActivity extends FragmentActivity implements OnMapReadyCallba
         // event 的欄位按照DB順序排列
         while (event.moveToNext()) {
             String category = "";
+            int icon = icon = R.drawable.event_others1;
             switch (event.getInt(event.getColumnIndex("category"))) {
                 case 1:
                     category = "道路施工";
+                    icon = R.drawable.event_repari1;
                     break;
                 case 2:
                     category = "道路封鎖";
+                    icon = R.drawable.event_roadblock1;
                     break;
                 case 3:
                     category = "車禍現場";
+                    icon = R.drawable.event_acident1;
                     break;
                 case 4:
                     category = "警察臨檢";
+                    icon = R.drawable.event_police1;
                     break;
                 case 5:
                     category = "大型物掉落";
+                    icon = R.drawable.event_drop1;
+                    break;
+                case 6:
+                    category = "其他事件";
+                    icon = R.drawable.event_others1;
                     break;
             }
             mEventMarkers.add(mMap.addMarker(new MarkerOptions()
@@ -599,8 +609,9 @@ public class ReportActivity extends FragmentActivity implements OnMapReadyCallba
                     .snippet(category + ","
                             + event.getString(4) + ","
                             + event.getString(5) + ","
-                            + event.getString(7)
-                    )));
+                            + event.getString(7))
+                    .icon(BitmapDescriptorFactory.fromResource(icon))
+            ));
         }
         mMap.setInfoWindowAdapter(mInfoWindowAdapter);
     }

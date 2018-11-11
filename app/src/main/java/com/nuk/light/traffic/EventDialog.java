@@ -19,7 +19,7 @@ public class EventDialog extends DialogFragment {
         // Inflate the layout for this
         View v = inflater.inflate(R.layout.event_dialog, container, false);
 
-        final List<Integer> buttonIds = Arrays.asList(R.id.ib_repair, R.id.ib_accident, R.id.ib_road_block, R.id.ib_drop, R.id.ib_police);
+        final List<Integer> buttonIds = Arrays.asList(R.id.ib_repair, R.id.ib_accident, R.id.ib_road_block, R.id.ib_drop, R.id.ib_police, R.id.ib_others);
 
         View.OnClickListener onClickListener = new View.OnClickListener() {
             @Override
@@ -48,6 +48,10 @@ public class EventDialog extends DialogFragment {
                     case R.id.ib_drop:
                         category = 5;
                         type = "大型物掉落";
+                        break;
+                    case R.id.ib_others:
+                        category = 6;
+                        type = "其他事件";
                         break;
                 }
 
