@@ -493,7 +493,7 @@ public class MyService extends Service implements LocationListener {
             @Override
             public void run() {
 
-                Log.d(TAG,"Start download DB from server");
+                //Log.d(TAG,"Start download DB from server");
                 String response = NetUtils.post("traffic_light/catch_event.php","key="+key_Event);
                 //String response = NetUtils.get("http://140.127.208.227/traffic_light/test_catch_event.php?key="+key_Event);
 
@@ -521,7 +521,7 @@ public class MyService extends Service implements LocationListener {
                     }else
                     {
                         Log.d(TAG,"事件更新");
-                        Log.d(TAG,response);
+                        //Log.d(TAG,response);
                         mIsDownloadDatabase = true;
                         key_Event = mMyDB.insertEvent(response_Event);
 
@@ -547,7 +547,7 @@ public class MyService extends Service implements LocationListener {
                 } catch (JSONException e) {
                     e.printStackTrace();
                 }
-                Log.d(TAG,"Finish download DB from server");
+                //Log.d(TAG,"Finish download DB from server");
                 //每10秒自動抓取
                 mEventHandler.postDelayed(this, 10000);
             }
@@ -577,7 +577,7 @@ public class MyService extends Service implements LocationListener {
                         }
                     } else {
                         if (mReportUiHandler != null) {
-                            Log.d(TAG, "finish");
+                            Log.d(TAG, "EMERGENCY_finish");
                             mReportUiHandler.sendEmptyMessage(Action.FINISH_EMERGENCY);
                         }
 
@@ -827,7 +827,7 @@ public class MyService extends Service implements LocationListener {
     {
         Log.d(TAG,"Start StoreNearestEvent");
 
-        for (int category_number=1;category_number<=5;category_number++)
+        for (int category_number=1;category_number<=6;category_number++)
         {
             int Index =0; // 儲存最近事件的索引
             double distance = Double.parseDouble(mSharedPref.getString("remind_accuracy", null));

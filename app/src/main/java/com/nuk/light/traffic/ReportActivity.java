@@ -105,6 +105,44 @@ public class ReportActivity extends FragmentActivity implements OnMapReadyCallba
             }
         }).start();
 
+        //在地圖上即時加入剛新增的事件Marker
+        //手機資料庫尚未更新
+        String name ="";
+        int show_icon =R.drawable.event_others1;
+        switch (category) {
+            case 1:
+                name = "道路施工";
+                show_icon = R.drawable.event_repari1;
+                break;
+            case 2:
+                name = "道路封鎖";
+                show_icon = R.drawable.event_roadblock1;
+                break;
+            case 3:
+                name = "車禍現場";
+                show_icon = R.drawable.event_acident1;
+                break;
+            case 4:
+                name = "警察臨檢";
+                show_icon = R.drawable.event_police1;
+                break;
+            case 5:
+                name = "大型物掉落";
+                show_icon = R.drawable.event_drop1;
+                break;
+            case 6:
+                name = "其他事件";
+                show_icon = R.drawable.event_others1;
+                break;
+        }
+        mEventMarkers.add(mMap.addMarker(new MarkerOptions()
+                .position(new LatLng(mChosenLatLng.latitude,mChosenLatLng.longitude))
+                .snippet(name+","
+                        +starttime+","
+                        +endtime+","
+                        +content)
+                .icon(BitmapDescriptorFactory.fromResource(show_icon))
+        ));
 
         resetChosenMarker();
     }
@@ -218,99 +256,6 @@ public class ReportActivity extends FragmentActivity implements OnMapReadyCallba
                             M_description.setText("補充資訊：" + datas[3]);
                         }
                     }
-/*
-                    //刪除 Marker
-                    Button M_Delete = view.findViewById(R.id.delete);
-                    M_Delete.setOnClickListener(new View.OnClickListener() {
-                        @Override
-                        public void onClick(View v) {
-                            Log.d(TAG, "onClick");
-                            // TODO: 資料庫刪除事件
-                            new Thread(new Runnable() {
-                                @Override
-                                public void run() {
-                                    String category = "";
-                                    switch(datas[0])
-                                    {
-                                        case("道路施工"):
-                                            category ="1";
-                                            break;
-                                        case("道路封鎖"):
-                                            category ="2";
-                                            break;
-                                        case("車禍現場"):
-                                            category ="3";
-                                            break;
-                                        case("警察臨檢"):
-                                            category ="4";
-                                            break;
-                                        case("大型物掉落"):
-                                            category ="5";
-                                            break;
-                                    }
-                                    Log.d(TAG, NetUtils.post("http://140.127.208.227/traffic_light/delete_event.php",
-                                            "category=" + "'" + category + "'" +
-                                                    "&latitude=" + "'" + Double.toString(marker.getPosition().latitude) + "'" +
-                                                    "&longitude=" + "'" + Double.toString(marker.getPosition().longitude) + "'"));
-                                }
-                            }).start();
-
-                            onCreate(null); //刷新頁面
-                        }
-                    });
-*/
-/*
-                    //延時 Marker
-                    Button M_Extend = view.findViewById(R.id.extending);
-                    M_Extend.setOnClickListener(new View.OnClickListener() {
-                        @Override
-                        public void onClick(View v) {
-                            Log.d(TAG, "onClick");
-                            // TODO: 向資料庫傳遞延時
-                            new Thread(new Runnable() {
-                                @Override
-                                public void run() {
-                                    String category = "";
-                                    switch(datas[0])
-                                    {
-                                        case("道路施工"):
-                                            category ="1";
-                                            break;
-                                        case("道路封鎖"):
-                                            category ="2";
-                                            break;
-                                        case("車禍現場"):
-                                            category ="3";
-                                            break;
-                                        case("警察臨檢"):
-                                            category ="4";
-                                            break;
-                                        case("大型物掉落"):
-                                            category ="5";
-                                            break;
-                                    }
-                                    SimpleDateFormat simpleDateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss", Locale.TAIWAN);
-                                    String delay = "";
-                                    try {
-                                        Date date =simpleDateFormat.parse(datas[2]);
-                                        date.setTime(date.getTime() + 7200000);
-                                        delay = simpleDateFormat.format(date);
-                                    } catch (ParseException e) {
-                                        e.printStackTrace();
-                                    }
-
-                                    NetUtils.post("http://140.127.208.227/traffic_light/delay_event.php",
-                                            "category=" + "'" + category + "'" +
-                                                    "&latitude=" + "'" + Double.toString(marker.getPosition().latitude) + "'" +
-                                                    "&longitude=" + "'" + Double.toString(marker.getPosition().longitude) + "'" +
-                                                    "&endtime=" + "'" + delay + "'");
-                                }
-                            }).start();
-
-                            onCreate(null); //刷新頁面
-                        }
-                    });
-*/
                     return view;
                 }
 

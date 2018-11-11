@@ -65,6 +65,9 @@ public class MarkerButtons extends DialogFragment {
                             case ("大型物掉落"):
                                 category = "5";
                                 break;
+                            case ("其他事件"):
+                                category = "6";
+                                break;
                         }
                         Log.d(TAG, NetUtils.post("traffic_light/delete_event.php",
                                 "category=" + "'" + category + "'" +
@@ -104,6 +107,9 @@ public class MarkerButtons extends DialogFragment {
                                 break;
                             case("大型物掉落"):
                                 category ="5";
+                                break;
+                            case("其他事件"):
+                                category ="6";
                                 break;
                         }
                         SimpleDateFormat simpleDateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss", Locale.TAIWAN);

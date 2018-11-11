@@ -70,9 +70,6 @@ public class MainActivity extends AppCompatActivity {
 
     /* Event 儲存屬性 */
     private ArrayList<ArrayList<String>> ArrayList_Event;
-    //private boolean[] bool_event_check;
-
-
 
     /** Method */
     /* onCreate */
@@ -177,12 +174,11 @@ public class MainActivity extends AppCompatActivity {
         iv_Traffic_lights.setOnClickListener(onClickListener);
 
         // Event
-        mEventIds = Arrays.asList(R.id.repair, R.id.roadblock, R.id.accident, R.id.drop, R.id.police);
+        mEventIds = Arrays.asList(R.id.repair, R.id.roadblock, R.id.accident, R.id.police, R.id.drop, R.id.others);
 
-        iv_Events = new ImageView[5];
-        run_twinkle = new Runnable[5];
-        //bool_event_check = new boolean[5];
-        for (int i = 0; i < 5; i++) {
+        iv_Events = new ImageView[6];
+        run_twinkle = new Runnable[6];
+        for (int i = 0; i < 6; i++) {
             final int index = i;
             iv_Events[i] = findViewById(mEventIds.get(i));
             iv_Events[i].setOnClickListener(eventOnClickListener);
@@ -335,7 +331,7 @@ public class MainActivity extends AppCompatActivity {
                         }
                         boolean first = true;
 
-                        for (int i = 0; i < 5; i++)
+                        for (int i = 0; i < 6; i++)
                         {
                             toggleTwinkle(i, true);
                             // TODO: 哪個先顯示 ?
