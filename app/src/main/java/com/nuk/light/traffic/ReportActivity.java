@@ -105,6 +105,7 @@ public class ReportActivity extends FragmentActivity implements OnMapReadyCallba
             }
         }).start();
 
+
         resetChosenMarker();
     }
 
