@@ -72,6 +72,7 @@ public class MarkerButtons extends DialogFragment {
                                         "&longitude=" + "'" + Double.toString(longitude) + "'"));
                     }
                 }).start();
+                dismiss();
             }
         });
 
@@ -126,7 +127,7 @@ public class MarkerButtons extends DialogFragment {
                                         "&endtime=" + "'" + delay + "'"));
                     }
                 }).start();
-
+                dismiss();
             }
         });
         return v;
