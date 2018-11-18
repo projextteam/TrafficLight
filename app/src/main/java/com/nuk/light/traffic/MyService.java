@@ -279,7 +279,15 @@ public class MyService extends Service implements LocationListener {
         mExecutor.execute(new Runnable() {
             @Override
             public void run() {
-                mDelta = Double.parseDouble(NetUtils.get("traffic_light/getTime.php?time=" + System.currentTimeMillis()));
+                String response = NetUtils.get("traffic_light/getTime.php?time=" + System.currentTimeMillis());
+                if(response != null)
+                {
+                    mDelta = Double.parseDouble(response);
+                }else
+                {
+                    mDelta =0;
+                }
+
             }
         });
     }
@@ -351,8 +359,11 @@ public class MyService extends Service implements LocationListener {
                     mUiHandler.sendEmptyMessage(Action.GET_DATA_FAIL_DIALOG);
 
                     return;
-                }
-                Log.d(TAG,"Download Database Success");
+                }else
+                    {
+                        Log.d(TAG,"Download Database Success");
+                    }
+
                 mMyDB.insertAllData(response);
             }
         };
@@ -496,6 +507,14 @@ public class MyService extends Service implements LocationListener {
                 //Log.d(TAG,"Start download DB from server");
                 String response = NetUtils.post("traffic_light/catch_event.php","key="+key_Event);
                 //String response = NetUtils.get("http://140.127.208.227/traffic_light/test_catch_event.php?key="+key_Event);
+                if(response == null)
+                {
+                    if(mUiHandler != null)
+                    {
+                        mUiHandler.sendEmptyMessage(Action.GET_EVENT_FAIL_DIALOG);
+                    }
+                    return;
+                }
 
                 try {
                     JSONObject jsonObject = new JSONObject(response);
@@ -509,7 +528,6 @@ public class MyService extends Service implements LocationListener {
                         {
                             mUiHandler.sendEmptyMessage(Action.GET_EVENT_FAIL_DIALOG);
                         }
-
                         return;
                     }
 
@@ -521,7 +539,6 @@ public class MyService extends Service implements LocationListener {
                     }else
                     {
                         Log.d(TAG,"事件更新");
-                        //Log.d(TAG,response);
                         mIsDownloadDatabase = true;
                         key_Event = mMyDB.insertEvent(response_Event);
 
