@@ -9,7 +9,6 @@ import android.content.res.Configuration;
 import android.database.Cursor;
 import android.location.Address;
 import android.location.Geocoder;
-import android.location.Location;
 import android.os.Build;
 import android.os.Handler;
 import android.os.IBinder;
@@ -72,7 +71,7 @@ public class ReportActivity extends FragmentActivity implements OnMapReadyCallba
     public void chooseCurrentLocation() {
         mChosenLatLng = new LatLng(mMyService.getCurrentLocation().getLatitude(), mMyService.getCurrentLocation().getLongitude());
         resetChosenMarker();
-        setMyLocation();
+        zoomCurrentLocation();
     }
 
     /* 發送事件回 Server */
@@ -223,7 +222,7 @@ public class ReportActivity extends FragmentActivity implements OnMapReadyCallba
         // Google 元件
         mGeocoder = new Geocoder(this, Locale.TAIWAN);
 
-        //事件Marker list
+        // 事件 Marker list
         mEventMarkers = new Vector<>();
 
         // Marker 自訂資訊頁面
@@ -263,8 +262,6 @@ public class ReportActivity extends FragmentActivity implements OnMapReadyCallba
             }
         };
 
-
-
         // MapClickListener
         mMapClickListener = new GoogleMap.OnMapClickListener() {
             @Override
@@ -288,7 +285,6 @@ public class ReportActivity extends FragmentActivity implements OnMapReadyCallba
                 toast.show();
             }
         };
-
 
         /* 程序控制元件 */
         // 線程池
@@ -314,7 +310,7 @@ public class ReportActivity extends FragmentActivity implements OnMapReadyCallba
                                 mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(mEmergency.getPosition(), 16));
                             }
                         } else {
-                            animateMarker(mEmergency, (LatLng) msg.obj, 1000);
+                            animateMarker(mEmergency, (LatLng) msg.obj);
                         }
 
                         break;
@@ -342,6 +338,10 @@ public class ReportActivity extends FragmentActivity implements OnMapReadyCallba
                         setting_marker();
 
                         break;
+                    case Action.UPDATE_CURRENT_MARKER:
+                        setCurrentMarker();
+
+                        break;
                 }
 
                 return true;
@@ -360,7 +360,8 @@ public class ReportActivity extends FragmentActivity implements OnMapReadyCallba
                 mMyService.setReportUiHandler(mHandler);
 
                 // 設定自己的位置
-                setMyLocation();
+                zoomCurrentLocation();
+                setCurrentMarker();
 
                 //設定所有marker
                 setting_marker();
@@ -396,7 +397,7 @@ public class ReportActivity extends FragmentActivity implements OnMapReadyCallba
     protected void onRestart() {
         super.onRestart();
 
-        setMyLocation();
+        zoomCurrentLocation();
         mMyService.setUiHandler(TAG, mHandler);
     }
 
@@ -436,19 +437,31 @@ public class ReportActivity extends FragmentActivity implements OnMapReadyCallba
     }
 
     /* 視角回到自己的位置 */
-    private void setMyLocation() {
-        if (mMyService .getCurrentLocation() == null) {
+    private void zoomCurrentLocation() {
+        if (mMyService.getCurrentLocation() == null) {
             return;
         }
 
-        LatLng latLng = new LatLng(mMyService.getCurrentLocation().getLatitude(), mMyService.getCurrentLocation().getLongitude());
-        mMap.animateCamera(CameraUpdateFactory.newLatLngZoom(latLng, 16));
+        mMap.animateCamera(CameraUpdateFactory.newLatLngZoom(new LatLng(
+                mMyService.getCurrentLocation().getLatitude(),
+                mMyService.getCurrentLocation().getLongitude()
+        ), 16));
+    }
 
+    private void setCurrentMarker() {
         if (mCurrentMarker == null) {
             mCurrentMarker = mMap.addMarker(new MarkerOptions()
                     .icon(BitmapDescriptorFactory.fromResource(R.drawable.direction))
-                    .position(latLng)
+                    .position(new LatLng(
+                            mMyService.getCurrentLocation().getLatitude(),
+                            mMyService.getCurrentLocation().getLongitude()
+                    ))
                     .flat(true));
+        } else {
+            animateMarker(mCurrentMarker, new LatLng(
+                    mMyService.getCurrentLocation().getLatitude(),
+                    mMyService.getCurrentLocation().getLongitude()
+            ));
         }
     }
 
@@ -465,7 +478,8 @@ public class ReportActivity extends FragmentActivity implements OnMapReadyCallba
     }
 
     /* 動畫移動 Marker 位置 */
-    private void animateMarker(final Marker marker, final LatLng toPosition, final int duration) {
+    private void animateMarker(final Marker marker, final LatLng toPosition) {
+        Log.d(TAG, "animateMarker");
         final long start = SystemClock.uptimeMillis();
         Projection projection = mMap.getProjection();
         android.graphics.Point startPoint = projection.toScreenLocation(marker.getPosition());
@@ -475,8 +489,7 @@ public class ReportActivity extends FragmentActivity implements OnMapReadyCallba
             @Override
             public void run() {
                 long elapsed = SystemClock.uptimeMillis() - start;
-                float t = interpolator.getInterpolation((float) elapsed
-                        / duration);
+                float t = interpolator.getInterpolation((float) elapsed / 1000);
                 double lng = t * toPosition.longitude + (1 - t)
                         * startLatLng.longitude;
                 double lat = t * toPosition.latitude + (1 - t)

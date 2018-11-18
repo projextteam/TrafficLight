@@ -63,9 +63,6 @@ public class MyService extends Service implements LocationListener {
 
             /* 開始取得 Location */
             mServiceHandler.post(run_getLocation);
-
-            /* 確認是否有緊急事件 */
-            //mEventHandler.post(run_checkEmergency);
         } else {
             mServiceHandler.removeCallbacks(run_resetLocation);
             mUiHandler = handler;
@@ -566,7 +563,8 @@ public class MyService extends Service implements LocationListener {
                 }
                 //Log.d(TAG,"Finish download DB from server");
                 //每10秒自動抓取
-                mEventHandler.postDelayed(this, 10000);
+                //demo版先改成三秒試試
+                mEventHandler.postDelayed(this, 3000);
             }
         };
 
@@ -820,12 +818,16 @@ public class MyService extends Service implements LocationListener {
         boolean isFromSameProvider = isSameProvider(location.getProvider(),
                 mCurrentLocation.getProvider());
 
+        // Check if the old and new location have same position
+        boolean isSamePosition = location.getLatitude() == mCurrentLocation.getLatitude() &&
+                location.getLongitude() == location.getLongitude();
+
         // Determine location quality using a combination of timeliness and accuracy
         if (isMoreAccurate) {
             return true;
-        } else if (isNewer && !isLessAccurate) {
+        } else if (isNewer && !isLessAccurate && !isSamePosition) {
             return true;
-        } else if (isNewer && !isSignificantlyLessAccurate && isFromSameProvider) {
+        } else if (isNewer && !isSignificantlyLessAccurate && isFromSameProvider && !isSamePosition) {
             return true;
         }
         return false;
@@ -1011,6 +1013,18 @@ public class MyService extends Service implements LocationListener {
                 move_distance= 0.0;
                 mUiHandler.sendEmptyMessage(Action.UPDATE_NEAREST_EVENT);
             }
+
+            /* Demo 使用 */
+            mUiHandler.sendEmptyMessage(Action.UPDATE_CURRENT_MARKER);
+            mExecutor.execute(new Runnable() {
+                @Override
+                public void run() {
+                    NetUtils.post("traffic_light/pushData.php", "id=demo&" +
+                            "lat=" + mCurrentLocation.getLatitude() + "&" +
+                            "lng=" + mCurrentLocation.getLongitude()
+                    );
+                }
+            });
         }
     }
 

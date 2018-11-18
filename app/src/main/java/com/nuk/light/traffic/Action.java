@@ -16,6 +16,7 @@ class Action {                 // handler 執行的動作種類
 
     static final int UPDATE_NEAREST_EVENT = 17;
     static final int UPDATE_REPORT_MARKER = 18;
+    static final int UPDATE_CURRENT_MARKER = 19;
 
     static final int HAVE_EMERGENCY = 20;
     static final int FINISH_EMERGENCY = 21;
