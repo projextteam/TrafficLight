@@ -310,7 +310,7 @@ public class ReportActivity extends FragmentActivity implements OnMapReadyCallba
                                 mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(mEmergency.getPosition(), 16));
                             }
                         } else {
-                            animateMarker(mEmergency, (LatLng) msg.obj);
+                            animateMarker(mInPipMode, mEmergency, (LatLng) msg.obj);
                         }
 
                         break;
@@ -359,12 +359,12 @@ public class ReportActivity extends FragmentActivity implements OnMapReadyCallba
                 }
                 mMyService.setReportUiHandler(mHandler);
 
+                //設定所有marker
+                setting_marker();
+
                 // 設定自己的位置
                 zoomCurrentLocation();
                 setCurrentMarker();
-
-                //設定所有marker
-                setting_marker();
 
                 /* 判斷是否進入 Picture-in-picture 模式 */
                 if (mInPipMode) {
@@ -406,6 +406,7 @@ public class ReportActivity extends FragmentActivity implements OnMapReadyCallba
         super.onPictureInPictureModeChanged(isInPictureInPictureMode, newConfig);
 
         if (!(mInPipMode = isInPictureInPictureMode)) {
+            mMyService.setUiHandler(TAG, mHandler);
             add_warning.setVisibility(View.VISIBLE);
         }
     }
@@ -438,17 +439,26 @@ public class ReportActivity extends FragmentActivity implements OnMapReadyCallba
 
     /* 視角回到自己的位置 */
     private void zoomCurrentLocation() {
+        LatLng center;
+        if (mMyService.getCurrentLocation() != null) {
+            center = new LatLng(
+                    mMyService.getCurrentLocation().getLatitude(),
+                    mMyService.getCurrentLocation().getLongitude()
+            );
+        } else if (!mEventMarkers.isEmpty()) {
+            center = mEventMarkers.get(0).getPosition();
+        } else {
+            center = new LatLng(22.730038, 120.284649);
+        }
+
+        mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(center, 16));
+    }
+
+    private void setCurrentMarker() {
         if (mMyService.getCurrentLocation() == null) {
             return;
         }
 
-        mMap.animateCamera(CameraUpdateFactory.newLatLngZoom(new LatLng(
-                mMyService.getCurrentLocation().getLatitude(),
-                mMyService.getCurrentLocation().getLongitude()
-        ), 16));
-    }
-
-    private void setCurrentMarker() {
         if (mCurrentMarker == null) {
             mCurrentMarker = mMap.addMarker(new MarkerOptions()
                     .icon(BitmapDescriptorFactory.fromResource(R.drawable.direction))
@@ -458,7 +468,7 @@ public class ReportActivity extends FragmentActivity implements OnMapReadyCallba
                     ))
                     .flat(true));
         } else {
-            animateMarker(mCurrentMarker, new LatLng(
+            animateMarker(false, mCurrentMarker, new LatLng(
                     mMyService.getCurrentLocation().getLatitude(),
                     mMyService.getCurrentLocation().getLongitude()
             ));
@@ -478,7 +488,7 @@ public class ReportActivity extends FragmentActivity implements OnMapReadyCallba
     }
 
     /* 動畫移動 Marker 位置 */
-    private void animateMarker(final Marker marker, final LatLng toPosition) {
+    private void animateMarker(final boolean isCenter, final Marker marker, final LatLng toPosition) {
         Log.d(TAG, "animateMarker");
         final long start = SystemClock.uptimeMillis();
         Projection projection = mMap.getProjection();
@@ -495,7 +505,7 @@ public class ReportActivity extends FragmentActivity implements OnMapReadyCallba
                 double lat = t * toPosition.latitude + (1 - t)
                         * startLatLng.latitude;
                 marker.setPosition(new LatLng(lat, lng));
-                if (mInPipMode) {
+                if (isCenter) {
                     mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(marker.getPosition(), 16));
                 }
                 if (t < 1.0) {
@@ -536,7 +546,7 @@ public class ReportActivity extends FragmentActivity implements OnMapReadyCallba
         // event 的欄位按照DB順序排列
         while (event.moveToNext()) {
             String category = "";
-            int icon = icon = R.drawable.event_others1;
+            int icon = R.drawable.event_others1;
             switch (event.getInt(event.getColumnIndex("category"))) {
                 case 1:
                     category = "道路施工";

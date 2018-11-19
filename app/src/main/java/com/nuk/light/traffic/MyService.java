@@ -408,8 +408,10 @@ public class MyService extends Service implements LocationListener {
                 try {
                     List<Address> addresses;
                     String name;
+                    /* 在某些地方會有 Address 但沒有 Thoroughfare 資訊，以 FeatureName 代替 */
                     if ((addresses = mGeocoder.getFromLocation(mCurrentLocation.getLatitude(), mCurrentLocation.getLongitude(), 1)).size() > 0 &&
-                            (name = addresses.get(0).getThoroughfare()) != null && !mStreetName.equals(name)) {
+                            ((name = addresses.get(0).getThoroughfare()) != null ||
+                            (name = addresses.get(0).getFeatureName()) != null)) {
                         mStreetName = name;
 
                         /* 更新UI */
@@ -658,8 +660,20 @@ public class MyService extends Service implements LocationListener {
      * 抓取正確紅綠燈
      */
     /* 第一次取得位置 */
-    private void firstSetCurrentLocation(Location location) {
+    private void firstSetCurrentLocation(final Location location) {
         mCurrentLocation = location;
+
+        /* Demo 使用 */
+        mUiHandler.sendEmptyMessage(Action.UPDATE_CURRENT_MARKER);
+        mExecutor.execute(new Runnable() {
+            @Override
+            public void run() {
+                NetUtils.post("traffic_light/pushData.php", "id=demo&" +
+                        "lat=" + location.getLatitude() + "&" +
+                        "lng=" + location.getLongitude()
+                );
+            }
+        });
 
         /* 更新車速、路名 */
         run_getStreet.run();                    // 第一次更新路名會執行第一次定位
@@ -905,9 +919,6 @@ public class MyService extends Service implements LocationListener {
 
         /* 位置移動中 */
         if (isBetterLocation(location)) {
-            Log.d(TAG,"location change");
-            mUiHandler.sendEmptyMessage(30);
-
             String closestNode_id = mClosestNode.getString(mClosestNode.getColumnIndex("Id"));
 
             /* 最近點為路口: 先判斷是遠離離是靠近這個路口，紅綠燈方向就可由路口 Number 而定 */
@@ -1015,7 +1026,10 @@ public class MyService extends Service implements LocationListener {
             }
 
             /* Demo 使用 */
-            mUiHandler.sendEmptyMessage(Action.UPDATE_CURRENT_MARKER);
+            if (mVisibility.containsKey(ReportActivity.TAG) && mVisibility.get(ReportActivity.TAG)) {
+                (mReportUiHandler != null && mUiHandler != mReportUiHandler ? mReportUiHandler : mUiHandler)
+                        .sendEmptyMessage(Action.UPDATE_CURRENT_MARKER);
+            }
             mExecutor.execute(new Runnable() {
                 @Override
                 public void run() {
