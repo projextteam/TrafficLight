@@ -7,6 +7,8 @@ import android.content.Intent;
 import android.content.ServiceConnection;
 import android.content.res.Configuration;
 import android.database.Cursor;
+import android.graphics.Bitmap;
+import android.graphics.drawable.BitmapDrawable;
 import android.location.Address;
 import android.location.Geocoder;
 import android.location.Location;
@@ -604,13 +606,18 @@ public class ReportActivity extends FragmentActivity implements OnMapReadyCallba
                     icon = R.drawable.event_others1;
                     break;
             }
+
+            BitmapDrawable bitmapped = (BitmapDrawable)getResources().getDrawable(icon);
+            Bitmap b = bitmapped.getBitmap();
+            Bitmap bitmap = Bitmap.createScaledBitmap(b, 80, 80, false);
+
             mEventMarkers.add(mMap.addMarker(new MarkerOptions()
                     .position(new LatLng(event.getDouble(1), event.getDouble(2)))
                     .snippet(category + ","
                             + event.getString(4) + ","
                             + event.getString(5) + ","
                             + event.getString(7))
-                    .icon(BitmapDescriptorFactory.fromResource(icon))
+                    .icon(BitmapDescriptorFactory.fromBitmap(bitmap))
             ));
         }
         mMap.setInfoWindowAdapter(mInfoWindowAdapter);
