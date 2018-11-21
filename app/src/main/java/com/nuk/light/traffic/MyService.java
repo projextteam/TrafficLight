@@ -176,6 +176,10 @@ public class MyService extends Service implements LocationListener {
         return mMyDB.getPeriodCursor(id);
     }
 
+    /* 讓 Setting 頁面可以存取 MyService */
+    public SharedPreferences.OnSharedPreferenceChangeListener getSharedPrefChangeListener() {
+        return mSharedPrefChangeListener;
+    }
 
     /**
      * Property
@@ -224,7 +228,9 @@ public class MyService extends Service implements LocationListener {
         }
     }
 
+    /* setting */
     private SharedPreferences mSharedPref;
+    private SharedPreferences.OnSharedPreferenceChangeListener mSharedPrefChangeListener;
 
     /* for UI */
     private Handler mUiHandler;                             // 更新 UI 使用
@@ -324,7 +330,26 @@ public class MyService extends Service implements LocationListener {
         // 回傳給 Client 的 Binder
         mBinder = new ServiceBinder();
 
-        mSharedPref = PreferenceManager.getDefaultSharedPreferences(MyService.this);
+        mSharedPref = PreferenceManager.getDefaultSharedPreferences(this);
+        mSharedPrefChangeListener = new SharedPreferences.OnSharedPreferenceChangeListener() {
+            @Override
+            public void onSharedPreferenceChanged(SharedPreferences sharedPreferences, String key) {
+                switch (key) {
+                    case "pip_cut":
+                        if (mEmergency) {
+                            if (sharedPreferences.getBoolean(key, false)) {
+                                startActivity(new Intent(MyService.this, ReportActivity.class)
+                                        .putExtra("PipMode", true));
+                            } else {
+                                mReportUiHandler.sendEmptyMessage(Action.FINISH_EMERGENCY);
+                            }
+                        }
+                        break;
+//                     case "main cut":
+//                          break;
+                }
+            }
+        };
 
         mVisibility = new HashMap<>();
         mEmergency = false;

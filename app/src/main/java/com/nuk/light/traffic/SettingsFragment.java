@@ -1,5 +1,6 @@
 package com.nuk.light.traffic;
 
+import android.content.Context;
 import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.preference.ListPreference;
@@ -8,13 +9,22 @@ import android.preference.PreferenceFragment;
 
 public class SettingsFragment extends PreferenceFragment implements SharedPreferences.OnSharedPreferenceChangeListener {
 
+    private SharedPreferences.OnSharedPreferenceChangeListener mSharedPrefChangeListener;
+
+    @Override
+    public void onAttach(Context context) {
+        super.onAttach(context);
+        mSharedPrefChangeListener = ((SettingsActivity) context).getListener();
+    }
+
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
         addPreferencesFromResource(R.xml.preferences);
-        getPreferenceScreen().getSharedPreferences()
-                .registerOnSharedPreferenceChangeListener(this);
+        SharedPreferences sharedPref = getPreferenceScreen().getSharedPreferences();
+        sharedPref.registerOnSharedPreferenceChangeListener(mSharedPrefChangeListener);
+        sharedPref.registerOnSharedPreferenceChangeListener(this);
 
         String[] keys = new String[]{"remind_second", "remind_accuracy", "remind_frequency"};
         for (String key : keys) {

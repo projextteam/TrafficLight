@@ -5,6 +5,7 @@ import android.app.PictureInPictureParams;
 import android.content.ComponentName;
 import android.content.Intent;
 import android.content.ServiceConnection;
+import android.content.SharedPreferences;
 import android.database.Cursor;
 import android.graphics.Bitmap;
 import android.graphics.drawable.BitmapDrawable;
@@ -15,6 +16,7 @@ import android.os.Handler;
 import android.os.IBinder;
 import android.os.Message;
 import android.os.SystemClock;
+import android.preference.PreferenceManager;
 import android.support.v4.app.FragmentActivity;
 import android.os.Bundle;
 import android.util.Log;
@@ -194,6 +196,8 @@ public class ReportActivity extends FragmentActivity implements OnMapReadyCallba
 
     private ExecutorService mExecutor;
 
+    private SharedPreferences mSharedPref;
+
     /* PictureInPicture */
     private boolean mInPipMode;
     private PictureInPictureParams mPictureInPictureParams;
@@ -223,8 +227,10 @@ public class ReportActivity extends FragmentActivity implements OnMapReadyCallba
         tv_StreetName.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                mInPipMode = true;
-                minimize();
+                if (mSharedPref.getBoolean("pip_cut", false)) {
+                    mInPipMode = true;
+                    minimize();
+                }
             }
         });
 
@@ -396,6 +402,8 @@ public class ReportActivity extends FragmentActivity implements OnMapReadyCallba
 
             }
         };
+
+        mSharedPref = PreferenceManager.getDefaultSharedPreferences(this);
 
         /* PictureInPicture 參數 */
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
