@@ -4,7 +4,6 @@ import android.database.Cursor;
 import android.util.Log;
 
 import java.text.SimpleDateFormat;
-import java.util.Calendar;
 import java.util.Locale;
 
 class TrafficLight {
@@ -118,7 +117,7 @@ class TrafficLight {
     }
 
     /* 進入下一秒的狀態 */
-    public boolean tick() {
+    boolean tick() {
         /* 若換週期的時間到了，重新初始 TrafficLight */
         if (--mSecondInFeature == 0) {
             initialize();
@@ -167,6 +166,6 @@ class TrafficLight {
 
     /* 回傳是否紅燈剩五秒需要提醒 */
     boolean isNeededReminding(String second) {
-        return getStatus().equals("Red") && mCountDown == Integer.parseInt(second);
+        return getStatus().equals("Green") && mCountDown == Integer.parseInt(second);
     }
 }
