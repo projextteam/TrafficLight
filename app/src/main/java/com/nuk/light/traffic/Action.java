@@ -11,6 +11,8 @@ class Action {                 // handler 執行的動作種類
     static final int WAITING_GPS = 7;
     static final int SET_MAX_PROGRESS = 8;
 
+    static final int DELETE_CHOOSE_EVENTMARKER = 10;
+
     static final int GET_DATA_FAIL_DIALOG = 15;
     static final int GET_EVENT_FAIL_DIALOG = 16;
 

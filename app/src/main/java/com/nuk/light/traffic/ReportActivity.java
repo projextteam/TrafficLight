@@ -146,7 +146,6 @@ public class ReportActivity extends FragmentActivity implements OnMapReadyCallba
         resetChosenMarker();
     }
 
-
     /**
      * Property
      */
@@ -281,8 +280,8 @@ public class ReportActivity extends FragmentActivity implements OnMapReadyCallba
                         .commit();
 
                 //Toast正常運行
-                Toast toast = Toast.makeText(ReportActivity.this, latLng.toString(), Toast.LENGTH_LONG);
-                toast.show();
+//                Toast toast = Toast.makeText(ReportActivity.this, latLng.toString(), Toast.LENGTH_LONG);
+//                toast.show();
             }
         };
 
@@ -340,6 +339,20 @@ public class ReportActivity extends FragmentActivity implements OnMapReadyCallba
                         break;
                     case Action.UPDATE_CURRENT_MARKER:
                         setCurrentMarker();
+
+                        break;
+                    case Action.DELETE_CHOOSE_EVENTMARKER:
+                        Log.d(TAG,"Action 10");
+                        LatLng eventLatLng = (LatLng) msg.obj;
+
+                        for(Marker m : mEventMarkers)
+                        {
+                            if(m.getPosition() == eventLatLng)
+                            {
+                                m.remove();
+                                Log.d(TAG,"re? , "+ eventLatLng.toString());
+                            }
+                        }
 
                         break;
                 }
