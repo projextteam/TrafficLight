@@ -315,7 +315,7 @@ public class MyService extends Service implements LocationListener {
                 // TTS 初始化成功
                 if (arg0 == TextToSpeech.SUCCESS) {
                     mTextToSpeech.setPitch(0.9f); // 音調
-                    mTextToSpeech.setSpeechRate(0.75f); // 速度
+                    mTextToSpeech.setSpeechRate(0.85f); // 速度
 
                     // 目前指定的【語系+國家】TTS, 已下載離線語音檔, 可以離線發音
                     if (mTextToSpeech.isLanguageAvailable(Locale.TAIWAN) == TextToSpeech.LANG_COUNTRY_AVAILABLE) {
@@ -497,9 +497,8 @@ public class MyService extends Service implements LocationListener {
         run_countDown = new Runnable() {
             @Override
             public void run() {
-                String second = mSharedPref.getString("remind_second", null);
-                if (mCurrentTrafficLight.isNeededReminding(second)) {
-                    mTextToSpeech.speak("前方路口剩餘" + second + "秒", TextToSpeech.QUEUE_FLUSH, null);
+                if (mCurrentTrafficLight.isNeededReminding(mSharedPref.getString("remind_second", null))) {
+                    mTextToSpeech.speak("前方路口即將紅燈，請減速慢行", TextToSpeech.QUEUE_FLUSH, null);
                 }
 
                 mStatus = mCurrentTrafficLight.getStatus();
