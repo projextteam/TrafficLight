@@ -10,6 +10,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.EditText;
+import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -19,6 +20,9 @@ public class EventDialog2 extends Fragment {
     public static final String TAG = "EventDialog2";
 
     private ImageView vType;
+    private ImageButton mChooseLoc;
+    private ImageButton mCurrentLoc;
+
     private String mType;
     private int mCategory;
 
@@ -77,20 +81,26 @@ public class EventDialog2 extends Fragment {
 
         mEditText = v.findViewById(R.id.editText3);
 
+        mCurrentLoc = v.findViewById(R.id.currentlocate);
+        mChooseLoc = v.findViewById(R.id.chooselocate);
         View.OnClickListener onClickListener = new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 switch (v.getId()) {
                     case R.id.currentlocate:
+                        mCurrentLoc.setImageResource(R.drawable.btn_currentloc_pressed);
+                        mChooseLoc.setImageResource(R.drawable.btn_chooseloc_selector);
                         mReportActivity.chooseCurrentLocation();
-
                         break;
+
                     case R.id.chooselocate:
+                        mChooseLoc.setImageResource(R.drawable.btn_chooseloc_pressed);
+                        mCurrentLoc.setImageResource(R.drawable.btn_currentloc_selector);
                         mFragmentManager.beginTransaction()
                                 .hide(EventDialog2.this)
                                 .commit();
-
                         break;
+
                     case R.id.sendmeassage:
                         mReportActivity.setUiVisibility(R.id.addwarning, View.VISIBLE);
                         mFragmentManager.popBackStackImmediate(EventDialog.TAG, FragmentManager.POP_BACK_STACK_INCLUSIVE);
@@ -98,9 +108,7 @@ public class EventDialog2 extends Fragment {
                                 .remove(mFragmentManager.findFragmentByTag(EventDialog.TAG))
                                 .remove(EventDialog2.this)
                                 .commit();
-
                         mReportActivity.sendEvent(mCategory, mEditText.getText().toString());
-
                         break;
                 }
             }
