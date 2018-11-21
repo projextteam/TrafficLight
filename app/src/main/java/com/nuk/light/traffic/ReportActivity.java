@@ -146,6 +146,23 @@ public class ReportActivity extends FragmentActivity implements OnMapReadyCallba
         resetChosenMarker();
     }
 
+    public void deleteEvent(LatLng eventLatLng) {
+        for (Marker marker : mEventMarkers) {
+            if (marker.getPosition().equals(eventLatLng)) {
+                marker.remove();
+            }
+        }
+    }
+
+    public void extendEvent(LatLng eventLatLng) {
+        for (Marker marker : mEventMarkers) {
+            if (marker.getPosition().equals(eventLatLng)) {
+                marker.hideInfoWindow();
+            }
+        }
+    }
+
+
     /**
      * Property
      */
@@ -339,20 +356,6 @@ public class ReportActivity extends FragmentActivity implements OnMapReadyCallba
                         break;
                     case Action.UPDATE_CURRENT_MARKER:
                         setCurrentMarker();
-
-                        break;
-                    case Action.DELETE_CHOOSE_EVENTMARKER:
-                        Log.d(TAG,"Action 10");
-                        LatLng eventLatLng = (LatLng) msg.obj;
-
-                        for(Marker m : mEventMarkers)
-                        {
-                            if(m.getPosition() == eventLatLng)
-                            {
-                                m.remove();
-                                Log.d(TAG,"re? , "+ eventLatLng.toString());
-                            }
-                        }
 
                         break;
                 }

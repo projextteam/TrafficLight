@@ -1,16 +1,8 @@
 package com.nuk.light.traffic;
 
 import android.app.DialogFragment;
-import android.app.Fragment;
-import android.content.ComponentName;
 import android.content.Context;
-import android.content.Intent;
-import android.content.ServiceConnection;
-import android.nfc.Tag;
 import android.os.Bundle;
-import android.os.Handler;
-import android.os.IBinder;
-import android.os.Message;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -18,18 +10,12 @@ import android.view.ViewGroup;
 import android.widget.ImageButton;
 import android.widget.Toast;
 
-import com.google.android.gms.maps.CameraUpdateFactory;
-import com.google.android.gms.maps.model.BitmapDescriptorFactory;
 import com.google.android.gms.maps.model.LatLng;
-import com.google.android.gms.maps.model.Marker;
-import com.google.android.gms.maps.model.MarkerOptions;
 
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.Locale;
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
 
 public class MarkerButtons extends DialogFragment {
 
@@ -41,19 +27,12 @@ public class MarkerButtons extends DialogFragment {
     private String[] datas;
     private Double latitude,longitude;
 
-    /* 程序控制元件 */
-    private Handler mHandler;               // 用此 Handler 處理 MyService 送過來的動作
-    private MyService mMyService;            // 用此 MyService instance 來操作 MyService
-    private ServiceConnection mConnection;
-
-    private ExecutorService mExecutor;
-
+    private ReportActivity mReportActivity;
 
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
-
         // Inflate the layout for this
         View v = inflater.inflate(R.layout.marker_buttons, container, false);
 
@@ -98,13 +77,9 @@ public class MarkerButtons extends DialogFragment {
                                         "&longitude=" + "'" + Double.toString(longitude) + "'"));
                     }
                 }).start();
-                Message message = Message.obtain();
-                message.what = Action.DELETE_CHOOSE_EVENTMARKER;
-                LatLng eventLatLng = new LatLng(latitude,longitude);
-                message.obj = eventLatLng;
 
-                mHandler.sendMessage(message);
-                Log.d(TAG,"send message");
+                mReportActivity.deleteEvent(new LatLng(latitude, longitude));
+
                 dismiss();
             }
         });
@@ -163,38 +138,12 @@ public class MarkerButtons extends DialogFragment {
                                         "&endtime=" + "'" + delay + "'"));
                     }
                 }).start();
+
+                mReportActivity.extendEvent(new LatLng(latitude, longitude));
+
                 dismiss();
             }
         });
-
-        /* 程序控制元件 */
-        // 線程池
-        mExecutor = Executors.newFixedThreadPool(5);
-
-        // Handler
-        mHandler = new Handler(new Handler.Callback() {
-            @Override
-            public boolean handleMessage(Message msg) {
-                return true;
-            }
-        });
-
-        // Bind Connection
-        mConnection = new ServiceConnection() {
-            @Override
-            public void onServiceConnected(ComponentName name, IBinder service) {
-                MyService.ServiceBinder binder = (MyService.ServiceBinder) service;
-                mMyService = binder.getService();
-                mMyService.setUiHandler(TAG, mHandler);
-                mMyService.setReportUiHandler(mHandler);
-
-            }
-
-            @Override
-            public void onServiceDisconnected(ComponentName name) {
-
-            }
-        };
 
         return v;
     }
@@ -202,6 +151,8 @@ public class MarkerButtons extends DialogFragment {
     @Override
     public void onAttach(Context context) {
         super.onAttach(context);
+
+        mReportActivity = (ReportActivity) context;
 
         Bundle mArgs = getArguments();
         if (getArguments() != null){
