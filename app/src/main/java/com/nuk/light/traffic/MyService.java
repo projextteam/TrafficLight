@@ -217,7 +217,7 @@ public class MyService extends Service implements LocationListener {
 
     /* 程序控制元件 */
     private IBinder mBinder;                                // Binder given to client
-    public class ServiceBinder extends Binder {
+    class ServiceBinder extends Binder {
         /* 回傳 instance of MyService */
         MyService getService() {
             return MyService.this;
@@ -807,6 +807,14 @@ public class MyService extends Service implements LocationListener {
     // TODO: 修改參數
     // 我們需要的是很即時的位置，兩分鐘可能太長，需要經過多次實驗來微調。
     private boolean isBetterLocation(Location location) {
+        // Check if the old and new location have same position
+        boolean isSamePosition = location.getLatitude() == mCurrentLocation.getLatitude() &&
+                location.getLongitude() == location.getLongitude();
+
+        if (isSamePosition) {
+            return false;
+        }
+
         // Check whether the new location fix is newer or older
         long timeDelta = location.getTime() - mCurrentLocation.getTime();
         boolean isSignificantlyNewer = timeDelta > TWO_MINUTES;
@@ -832,16 +840,12 @@ public class MyService extends Service implements LocationListener {
         boolean isFromSameProvider = isSameProvider(location.getProvider(),
                 mCurrentLocation.getProvider());
 
-        // Check if the old and new location have same position
-        boolean isSamePosition = location.getLatitude() == mCurrentLocation.getLatitude() &&
-                location.getLongitude() == location.getLongitude();
-
         // Determine location quality using a combination of timeliness and accuracy
         if (isMoreAccurate) {
             return true;
-        } else if (isNewer && !isLessAccurate && !isSamePosition) {
+        } else if (isNewer && !isLessAccurate) {
             return true;
-        } else if (isNewer && !isSignificantlyLessAccurate && isFromSameProvider && !isSamePosition) {
+        } else if (isNewer && !isSignificantlyLessAccurate && isFromSameProvider) {
             return true;
         }
         return false;

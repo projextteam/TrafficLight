@@ -5,7 +5,6 @@ import android.app.PictureInPictureParams;
 import android.content.ComponentName;
 import android.content.Intent;
 import android.content.ServiceConnection;
-import android.content.res.Configuration;
 import android.database.Cursor;
 import android.graphics.Bitmap;
 import android.graphics.drawable.BitmapDrawable;
@@ -148,6 +147,7 @@ public class ReportActivity extends FragmentActivity implements OnMapReadyCallba
         resetChosenMarker();
     }
 
+    /* 刪除事件 */
     public void deleteEvent(LatLng eventLatLng) {
         for (Marker marker : mEventMarkers) {
             if (marker.getPosition().equals(eventLatLng)) {
@@ -156,6 +156,7 @@ public class ReportActivity extends FragmentActivity implements OnMapReadyCallba
         }
     }
 
+    /* 延時事件 */
     public void extendEvent(LatLng eventLatLng) {
         for (Marker marker : mEventMarkers) {
             if (marker.getPosition().equals(eventLatLng)) {
@@ -202,7 +203,6 @@ public class ReportActivity extends FragmentActivity implements OnMapReadyCallba
      */
     @Override
     protected void onCreate(Bundle savedInstanceState) {
-        Log.d(TAG, "onCreate");
         super.onCreate(savedInstanceState);
         setContentView(R.layout.reportmap);
         // Obtain the SupportMapFragment and get notified when the map is ready to be used.
@@ -223,6 +223,7 @@ public class ReportActivity extends FragmentActivity implements OnMapReadyCallba
         tv_StreetName.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+                mInPipMode = true;
                 minimize();
             }
         });
@@ -412,21 +413,22 @@ public class ReportActivity extends FragmentActivity implements OnMapReadyCallba
     }
 
     @Override
+    protected void onResume() {
+        super.onResume();
+
+        if (mMyService != null && add_warning.getVisibility() == View.INVISIBLE) {
+            mInPipMode = false;
+            mMyService.setUiHandler(TAG, mHandler);
+            add_warning.setVisibility(View.VISIBLE);
+        }
+    }
+
+    @Override
     protected void onRestart() {
         super.onRestart();
 
         zoomCurrentLocation();
         mMyService.setUiHandler(TAG, mHandler);
-    }
-
-    @Override
-    public void onPictureInPictureModeChanged(boolean isInPictureInPictureMode, Configuration newConfig) {
-        super.onPictureInPictureModeChanged(isInPictureInPictureMode, newConfig);
-
-        if (!(mInPipMode = isInPictureInPictureMode)) {
-            mMyService.setUiHandler(TAG, mHandler);
-            add_warning.setVisibility(View.VISIBLE);
-        }
     }
 
     /* Pip 往下移除只會進入 onStop，不會進入 onDestroy */
@@ -507,7 +509,6 @@ public class ReportActivity extends FragmentActivity implements OnMapReadyCallba
 
     /* 動畫移動 Marker 位置 */
     private void animateMarker(final boolean isCenter, final Marker marker, final LatLng toPosition) {
-        Log.d(TAG, "animateMarker");
         final long start = SystemClock.uptimeMillis();
         Projection projection = mMap.getProjection();
         android.graphics.Point startPoint = projection.toScreenLocation(marker.getPosition());
