@@ -3,7 +3,6 @@ package com.nuk.light.traffic;
 import android.app.DialogFragment;
 import android.content.Context;
 import android.os.Bundle;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -43,13 +42,9 @@ public class MarkerButtons extends DialogFragment {
                 Toast toast = Toast.makeText(getActivity(), "Delete", Toast.LENGTH_LONG);
                 toast.show();
 
-                Log.d(TAG, "onClick_delete");
-                // TODO: 資料庫刪除事件
-
                 new Thread(new Runnable() {
                     @Override
                     public void run() {
-                        Log.d(TAG, "onClick_delete111");
                         String category = "";
                         switch (datas[0]) {
                             case ("道路施工"):
@@ -71,10 +66,10 @@ public class MarkerButtons extends DialogFragment {
                                 category = "6";
                                 break;
                         }
-                        Log.d(TAG, NetUtils.post("traffic_light/delete_event.php",
+                        NetUtils.post("traffic_light/delete_event.php",
                                 "category=" + "'" + category + "'" +
                                         "&latitude=" + "'" + Double.toString(latitude) + "'" +
-                                        "&longitude=" + "'" + Double.toString(longitude) + "'"));
+                                        "&longitude=" + "'" + Double.toString(longitude) + "'");
                     }
                 }).start();
 
@@ -91,8 +86,6 @@ public class MarkerButtons extends DialogFragment {
                 Toast toast = Toast.makeText(getActivity(), "Extend", Toast.LENGTH_LONG);
                 toast.show();
 
-                Log.d(TAG, "onClick_extend");
-                // TODO: 向資料庫傳遞延時
                 new Thread(new Runnable() {
                     @Override
                     public void run() {
@@ -121,7 +114,6 @@ public class MarkerButtons extends DialogFragment {
                         SimpleDateFormat simpleDateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss", Locale.TAIWAN);
                         String delay = "";
                         try {
-                            Log.d(TAG,"now time is " + datas[2]);
                             Date date =simpleDateFormat.parse(datas[2]);
                             date.setTime(date.getTime() + 7200000);
 
@@ -131,11 +123,11 @@ public class MarkerButtons extends DialogFragment {
                             e.printStackTrace();
                         }
 
-                        Log.d(TAG,NetUtils.post("traffic_light/delay_event.php",
+                        NetUtils.post("traffic_light/delay_event.php",
                                 "category=" + "'" + category + "'" +
                                         "&latitude=" + "'" + Double.toString(latitude) + "'" +
                                         "&longitude=" + "'" + Double.toString(longitude) + "'" +
-                                        "&endtime=" + "'" + delay + "'"));
+                                        "&endtime=" + "'" + delay + "'");
                     }
                 }).start();
 

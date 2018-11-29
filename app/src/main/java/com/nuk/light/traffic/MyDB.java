@@ -5,7 +5,6 @@ import android.content.Context;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
-import android.util.Log;
 
 import org.json.JSONArray;
 import org.json.JSONObject;
@@ -93,7 +92,6 @@ public class MyDB extends SQLiteOpenHelper {
                 ")"
         );
 
-        Log.d("123", "create");
         //event
         db.execSQL("CREATE TABLE event (" +
                 "category tinyint(3) not null ," +
@@ -116,12 +114,12 @@ public class MyDB extends SQLiteOpenHelper {
 
     }
 
-    public boolean isOnCreate() {
+    boolean isOnCreate() {
         return mOnCreate;
     }
 
     /* 解析 JSON，將所有資料插入資料庫 */
-    public void insertAllData(String response) {
+    void insertAllData(String response) {
         mOnCreate = false;
 
         SQLiteDatabase db = getWritableDatabase();
@@ -165,14 +163,14 @@ public class MyDB extends SQLiteOpenHelper {
             db.setTransactionSuccessful();
             mReadableDB = getReadableDatabase();
         } catch (Exception e) {
-            Log.e("MyDB", Log.getStackTraceString(e));
+            e.printStackTrace();
         } finally {
             /* 關閉事務 */
             db.endTransaction();
         }
     }
 
-    public String insertEvent(String response_Event)
+    String insertEvent(String response_Event)
     {
         //先執行清空資料表，再重新新增
         mOnCreate = false;
@@ -204,17 +202,17 @@ public class MyDB extends SQLiteOpenHelper {
             db.setTransactionSuccessful();
             mReadableDB = getReadableDatabase();
         } catch (Exception e) {
-            Log.e("MyDB", Log.getStackTraceString(e));
+            e.printStackTrace();
         } finally {
             /* 關閉事務 */
             db.endTransaction();
         }
-        //TODO: 需要將key從MyDB 傳到 MyService  利用bundle? 直接新增　update_key function?
+
         return  key_Event;
     }
 
     /* 根據所在的道路名稱找出最靠近的 Node 來判斷位置 */
-    public Cursor getNodesOnRoad(String streetName) {
+    Cursor getNodesOnRoad(String streetName) {
         return mReadableDB.rawQuery("SELECT DISTINCT node.* " +
                 "FROM node, nodes, vector " +
                 "WHERE node.Id = nodes.N_id AND vector.Id = nodes.V_id AND vector.Name = ?",
@@ -222,7 +220,7 @@ public class MyDB extends SQLiteOpenHelper {
     }
 
     /* 取得該路口 Node 在 Node Cursor 所屬之 Vector 的 Number  */
-    public int getCrossNumberOnNodeVector(Cursor crossCursor, Cursor nodeCursor) {
+    int getCrossNumberOnNodeVector(Cursor crossCursor, Cursor nodeCursor) {
         Cursor cursor = mReadableDB.rawQuery("SELECT nodes.Number " +
                 "FROM nodes " +
                 "WHERE N_id = ? AND V_id = ?",
@@ -237,7 +235,7 @@ public class MyDB extends SQLiteOpenHelper {
     }
 
     /* 取得 Node Cursor 所屬之 Vector 上的其他 Nodes */
-    public Cursor getNodesOnNodeVector(Cursor nodeCursor) {
+    Cursor getNodesOnNodeVector(Cursor nodeCursor) {
         return mReadableDB.rawQuery("SELECT node.*, nodes.Number " +
                         "FROM node, nodes, vector " +
                         "WHERE node.Id = nodes.N_id AND vector.Id = nodes.V_id AND vector.Id = ?",
@@ -245,7 +243,7 @@ public class MyDB extends SQLiteOpenHelper {
     }
 
     /* 取得 Node Cursor 所屬之 Vector 上的紅綠燈 */
-    public Cursor getTrafficLightsOnNodeVector(Cursor nodeCursor) {
+    Cursor getTrafficLightsOnNodeVector(Cursor nodeCursor) {
         return mReadableDB.rawQuery("SELECT trafficlight.*, lights.Direction " +
                         "FROM vector, lights, trafficlight " +
                         "WHERE vector.Id = lights.V_id AND trafficlight.Id = lights.L_id AND lights.V_id = ? " +
@@ -254,7 +252,7 @@ public class MyDB extends SQLiteOpenHelper {
     }
 
     /* 取得 Node Cursor 相鄰的 Nodes */
-    public Cursor getNeighborNodes(Cursor nodeCursor) {
+    Cursor getNeighborNodes(Cursor nodeCursor) {
         return mReadableDB.rawQuery("SELECT node.*, nodes.* " +
                         "FROM node, nodes, (SELECT nodes.V_id, nodes.Number FROM vector, nodes WHERE vector.Id = nodes.V_id AND N_id = ?) as x " +
                         "WHERE node.Id = nodes.N_id AND nodes.V_id = x.V_id " +
@@ -264,7 +262,7 @@ public class MyDB extends SQLiteOpenHelper {
     }
 
     /* 取得紅綠燈 Id 之所有週期 */
-    public Cursor getPeriodCursor(int id) {
+    Cursor getPeriodCursor(int id) {
         return mReadableDB.rawQuery("SELECT * " +
                         "FROM period " +
                         "WHERE Id = " + id + " " +
@@ -273,19 +271,19 @@ public class MyDB extends SQLiteOpenHelper {
     }
 
     /* 取得所有事件*/
-    public Cursor getAllEvent()
+    Cursor getAllEvent()
     {
         return  mReadableDB.rawQuery( "SELECT *FROM event WHERE status = 1",null);
     }
 
     /* 取得特定種類的事件 */
-    public Cursor getCategoryEvent (int category_number)
+    Cursor getCategoryEvent(int category_number)
     {
         return  mReadableDB.rawQuery( "SELECT * FROM event WHERE category =" + Integer.toString(category_number) ,null);
     }
 
     /* 取得所有紅綠燈 */
-    public Cursor getAllLights() {
+    Cursor getAllLights() {
         return mReadableDB.rawQuery("SELECT * FROM trafficlight", null);
     }
 }

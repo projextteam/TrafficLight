@@ -113,7 +113,6 @@ public class TrafficLightsActivity extends FragmentActivity implements OnMapRead
                         }
 
                         /* 開始倒數 */
-                        // TODO: 沒有跟主畫面同步跳
                         mHandler.post(run_countDown);
                     }
                 }).start();

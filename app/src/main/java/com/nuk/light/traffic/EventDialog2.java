@@ -3,9 +3,7 @@ package com.nuk.light.traffic;
 import android.app.Fragment;
 import android.app.FragmentManager;
 import android.content.Context;
-import android.location.Location;
 import android.os.Bundle;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -13,13 +11,11 @@ import android.widget.EditText;
 import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.TextView;
-import android.widget.Toast;
 
 public class EventDialog2 extends Fragment {
 
     public static final String TAG = "EventDialog2";
 
-    private ImageView vType;
     private ImageButton mChooseLoc;
     private ImageButton mCurrentLoc;
 
@@ -55,7 +51,7 @@ public class EventDialog2 extends Fragment {
         TextView eventType = v.findViewById(R.id.event);
         eventType.setText(mType);
 
-        vType = v.findViewById(R.id.eventicon);
+        ImageView vType = v.findViewById(R.id.eventicon);
         switch (mCategory){
             case 1:
             vType.setImageResource(R.drawable.event_repari1);
