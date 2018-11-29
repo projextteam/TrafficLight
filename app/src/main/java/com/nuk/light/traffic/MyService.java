@@ -75,13 +75,13 @@ public class MyService extends Service implements LocationListener {
                     } else if (mCurrentLocation == null) {
                         mUiHandler.sendEmptyMessage(Action.WAITING_GPS);
                     } else {
+                        mUiHandler.sendEmptyMessage(Action.SET_SPEED);
+                        mUiHandler.sendEmptyMessage(Action.SET_STREET);
+                        mUiHandler.sendEmptyMessage(Action.UPDATE_NEAREST_EVENT);
                         if (mCurrentTrafficLight == null) {
                             mUiHandler.sendEmptyMessage(Action.SET_NO_TRAFFIC_LIGHT);
                         } else {
-                            mUiHandler.sendEmptyMessage(Action.SET_SPEED);
-                            mUiHandler.sendEmptyMessage(Action.SET_STREET);
                             mUiHandler.sendEmptyMessage(Action.SET_TRAFFIC_LIGHT);
-                            mUiHandler.sendEmptyMessage(Action.UPDATE_NEAREST_EVENT);
                         }
                     }
 
@@ -297,8 +297,6 @@ public class MyService extends Service implements LocationListener {
 
     /* 初始所有元件 */
     private void initialize() {
-        Log.d(TAG,"Start initialize");
-
         /* Location */
         mLocationManager = (LocationManager) this.getSystemService(Context.LOCATION_SERVICE);    // 取得定位服務
         mGeocoder = new Geocoder(MyService.this, Locale.TAIWAN);                          // Geocoder
@@ -345,8 +343,16 @@ public class MyService extends Service implements LocationListener {
                             }
                         }
                         break;
-//                     case "main cut":
-//                          break;
+                    case "main_cut":
+                        Log.d(TAG, "main cut " + sharedPreferences.getBoolean(key, false));
+                        if (!sharedPreferences.getBoolean(key, false)) {
+                            NearestEvent.clear();
+                        } else {
+                            move_distance = 0.0;
+                            storeNearestEvent();
+                        }
+
+                        break;
                 }
             }
         };
@@ -355,7 +361,6 @@ public class MyService extends Service implements LocationListener {
         mEmergency = false;
 
         // 新開一條 HandlerThread 處理 Service 中的耗時操作
-        // TODO: thread 管理
         mServiceThread = new HandlerThread("MyService");
         mServiceThread.start();
         mEventThread = new HandlerThread("Emergency");
@@ -372,19 +377,14 @@ public class MyService extends Service implements LocationListener {
         run_downloadData = new Runnable() {
             @Override
             public void run() {
-                Log.d(TAG,"Download Database process");
                 String response = NetUtils.get("traffic_light/getData.php");
                 if (response == null) {
                     deleteDatabase("SQLiteDB.db");
                     mServiceHandler.removeCallbacksAndMessages(null);
-                    Log.d(TAG,"Download Database Failure");
                     mUiHandler.sendEmptyMessage(Action.GET_DATA_FAIL_DIALOG);
 
                     return;
-                }else
-                    {
-                        Log.d(TAG,"Download Database Success");
-                    }
+                }
 
                 mMyDB.insertAllData(response);
             }
@@ -526,10 +526,7 @@ public class MyService extends Service implements LocationListener {
         run_getEvent = new Runnable() {
             @Override
             public void run() {
-
-                //Log.d(TAG,"Start download DB from server");
                 String response = NetUtils.post("traffic_light/catch_event.php","key="+key_Event);
-                //String response = NetUtils.get("http://140.127.208.227/traffic_light/test_catch_event.php?key="+key_Event);
                 if(response == null)
                 {
                     if(mUiHandler != null)
@@ -546,7 +543,6 @@ public class MyService extends Service implements LocationListener {
                     JSONArray jsonArray = new JSONArray(response_Location);
 
                     if ("Please send a key".equals(response_Event)) {
-                        Log.d(TAG,"Please send a key");
                         if(mUiHandler != null)
                         {
                             mUiHandler.sendEmptyMessage(Action.GET_EVENT_FAIL_DIALOG);
@@ -556,12 +552,10 @@ public class MyService extends Service implements LocationListener {
 
                     if ("No event update".equals(response_Event))
                     {
-                        Log.d(TAG,"No event update");
                         mIsDownloadDatabase = true;
 
                     }else
                     {
-                        Log.d(TAG,"事件更新");
                         mIsDownloadDatabase = true;
                         key_Event = mMyDB.insertEvent(response_Event);
 
@@ -587,9 +581,7 @@ public class MyService extends Service implements LocationListener {
                 } catch (JSONException e) {
                     e.printStackTrace();
                 }
-                //Log.d(TAG,"Finish download DB from server");
-                //每10秒自動抓取
-                //demo版先改成三秒試試
+                //每 3 秒自動抓取
                 mEventHandler.postDelayed(this, 3000);
             }
         };
@@ -604,7 +596,6 @@ public class MyService extends Service implements LocationListener {
                     if (jsonArray.length() != 0) {
                         for (int i = 0; i < jsonArray.length(); i++) {
                             JSONObject jsonObject = jsonArray.getJSONObject(i);
-                            // TODO: 多緊急事件同時發生
                             Message message = Message.obtain();
                             message.what = Action.HAVE_EMERGENCY;
                             message.obj = new LatLng(jsonObject.getDouble("Latitude"),
@@ -618,7 +609,6 @@ public class MyService extends Service implements LocationListener {
                         }
                     } else {
                         if (mReportUiHandler != null) {
-                            Log.d(TAG, "EMERGENCY_finish");
                             mReportUiHandler.sendEmptyMessage(Action.FINISH_EMERGENCY);
                         }
 
@@ -641,8 +631,6 @@ public class MyService extends Service implements LocationListener {
 
         NearestEvent = new ArrayList<>(); // 所有最近事件的集合
         past_lat = past_lng = move_distance = 0.0; // 移動距離相關屬性
-
-        Log.d(TAG,"Finish initialize");
     }
 
     /* Bind Service */
@@ -723,7 +711,6 @@ public class MyService extends Service implements LocationListener {
 
     /* 把 Cursor 移動到最接近自己位置的那個 */
     private Cursor moveToClosestPosition (Cursor cursor) {
-        // TODO: 更快的算法
         // 目前使用的方式為 O(N)，N 為 cursor 資料數
         int min_i = -1;
         float min_distance = Float.MAX_VALUE;
@@ -828,8 +815,6 @@ public class MyService extends Service implements LocationListener {
     }
 
     /* android developer 來的 */
-    // TODO: 修改參數
-    // 我們需要的是很即時的位置，兩分鐘可能太長，需要經過多次實驗來微調。
     private boolean isBetterLocation(Location location) {
         // Check if the old and new location have same position
         boolean isSamePosition = location.getLatitude() == mCurrentLocation.getLatitude() &&
@@ -886,8 +871,7 @@ public class MyService extends Service implements LocationListener {
     /* 去資料庫抓取最近事件並儲存 */
     private void storeNearestEvent()
     {
-        Log.d(TAG,"Start StoreNearestEvent");
-
+        NearestEvent.clear();
         for (int category_number=1;category_number<=6;category_number++)
         {
             int Index =0; // 儲存最近事件的索引
@@ -898,7 +882,6 @@ public class MyService extends Service implements LocationListener {
 
             if (myDBCategoryEvent.getCount() != 0)
             {
-                Log.d(TAG,"StoreNearestEvent " + Integer.toString(category_number) + " getCount is Success!");
                 myDBCategoryEvent.moveToFirst();
                 while(!myDBCategoryEvent.isAfterLast())
                 {
@@ -912,7 +895,6 @@ public class MyService extends Service implements LocationListener {
                     }
                     myDBCategoryEvent.moveToNext();
                 }
-                Log.d(TAG,"Index is : "+ Integer.toString(Index));
 
                 //移動到指定事件
                 myDBCategoryEvent.moveToPosition(Index);
@@ -924,7 +906,6 @@ public class MyService extends Service implements LocationListener {
                 event.add(myDBCategoryEvent.getString(7)); // content
             }else
             {
-                Log.d(TAG,"StoreNearestEvent " + Integer.toString(category_number) + " Count is empty!");
                 // 資料庫返回 空集合
                 event.add("null");
                 event.add("null");
@@ -933,7 +914,6 @@ public class MyService extends Service implements LocationListener {
             NearestEvent.add(event);
 
         }
-        Log.d(TAG,"Finish StoreNearestEvent");
     }
 
     /** Override LocationListener */
@@ -1042,14 +1022,11 @@ public class MyService extends Service implements LocationListener {
             past_lng= now_lng;
 
             /* 當移動距離達到500m 開始抓取最近事件*/
-            //Log.d(TAG,"UPDATE_NEAREST_EVENT");
-            //Log.d(TAG, Double.toString(move_distance) + " + " + mIsDownloadDatabase);
-            if (move_distance >= Double.parseDouble(mSharedPref.getString("remind_frequency", null)) && mIsDownloadDatabase)
-            {
-                //Log.d(TAG, Double.toString(move_distance) + "+" + mSharedPref.getString("remind_frequency", null) );
-                Log.d(TAG,"Need Database");
+            if (mSharedPref.getBoolean("main_cut", false) &&
+                    move_distance >= Double.parseDouble(mSharedPref.getString("remind_frequency", null)) &&
+                    mIsDownloadDatabase) {
                 storeNearestEvent();
-                move_distance= 0.0;
+                move_distance = 0.0;
                 mUiHandler.sendEmptyMessage(Action.UPDATE_NEAREST_EVENT);
             }
 
@@ -1072,7 +1049,7 @@ public class MyService extends Service implements LocationListener {
 
     @Override
     public void onStatusChanged(String provider, int status, Bundle extras) {
-        // TODO: 可用衛星信號等資訊
+
     }
 
     @Override

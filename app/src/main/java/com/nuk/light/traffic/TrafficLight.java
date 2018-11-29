@@ -1,7 +1,6 @@
 package com.nuk.light.traffic;
 
 import android.database.Cursor;
-import android.util.Log;
 
 import java.text.SimpleDateFormat;
 import java.util.Locale;
@@ -50,10 +49,6 @@ class TrafficLight {
 
         /* 設初始值 */
         initialize();
-
-        if (mLightSeconds == null) {
-            Log.d("TrafficLight", String.valueOf(id));
-        }
 
         /* 計算此週期總時間 */
         int totalSecond = 0;

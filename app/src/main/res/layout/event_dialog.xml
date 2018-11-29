@@ -10,9 +10,6 @@
     android:orientation="vertical"
     tools:context=".EventDialog">
 
-    <!-- TODO: Update blank fragment layout -->
-
-
     <TableLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent"

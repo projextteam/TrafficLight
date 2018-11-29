@@ -19,7 +19,6 @@ import android.os.SystemClock;
 import android.preference.PreferenceManager;
 import android.support.v4.app.FragmentActivity;
 import android.os.Bundle;
-import android.util.Log;
 import android.util.Rational;
 import android.view.View;
 import android.view.animation.Interpolator;
@@ -260,10 +259,8 @@ public class ReportActivity extends FragmentActivity implements OnMapReadyCallba
 
             @Override
             public View getInfoContents(final Marker marker) {
-                Log.d(TAG, "getInfoContents");
                 // 自訂顯示內容
                 if (marker.getSnippet() != null) {
-                    Log.d(TAG, "not null");
                     View view = getLayoutInflater().inflate(R.layout.marker_info, null);
 
                     final String[] datas = marker.getSnippet().split(",");
@@ -276,7 +273,7 @@ public class ReportActivity extends FragmentActivity implements OnMapReadyCallba
                         TextView M_endtime = view.findViewById(R.id.endtime);
                         M_endtime.setText("結束時間：" + datas[2] + " (預計)");
                         if (datas.length > 3) {
-                            TextView M_description = (TextView) view.findViewById(R.id.description);
+                            TextView M_description = view.findViewById(R.id.description);
                             M_description.setText("補充資訊：" + datas[3]);
                         }
                     }

@@ -21,7 +21,6 @@ import android.support.v4.app.ActivityCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.text.method.ScrollingMovementMethod;
-import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.ImageView;
@@ -93,13 +92,10 @@ public class MainActivity extends AppCompatActivity {
             startService(new Intent(this, MyService.class));
             bindService(new Intent(this, MyService.class), mConnection, BIND_AUTO_CREATE);
         }
-        //TODO:try
-        //savedInstanceState.
     }
 
     /* 初始化所有元件 */
     private void initialize() {
-        Log.d(TAG,"Start initialize");
         /* 初始UI元件 */
         // View OnClickListener
         View.OnClickListener onClickListener = new Button.OnClickListener() {
@@ -141,8 +137,6 @@ public class MainActivity extends AppCompatActivity {
             @Override
             public void onClick(View v) {
                 int index = mEventIds.indexOf(v.getId());
-                //bool_event_check[index] = true;
-                Log.d(TAG,"I click on [index] is" + index);
                 toggleTwinkle(index, true);
                 tv_Description.setText(ArrayList_Event.get(index).get(3));
             }
@@ -316,12 +310,15 @@ public class MainActivity extends AppCompatActivity {
 
                         break;
                     case Action.UPDATE_NEAREST_EVENT:
-                        Log.d(TAG,"Call OMG");
                         ArrayList_Event = mMyService.getNearestEvent();
 
-                        if (ArrayList_Event.size() ==0)
-                        {
-                            Log.d(TAG,"ArrayList_Event is empty");
+                        if (ArrayList_Event.isEmpty()) {
+                            for (int i = 0; i < 6; i++) {
+                                toggleTwinkle(i, true);
+                                iv_Events[i].setAlpha(0.2f);
+                                iv_Events[i].setEnabled(false);
+                            }
+                            tv_Description.setText("");
                             break;
                         }
 
@@ -334,7 +331,7 @@ public class MainActivity extends AppCompatActivity {
                         for (int i = 0; i < 6; i++)
                         {
                             toggleTwinkle(i, true);
-                            // TODO: 哪個先顯示 ?
+
                             if (ArrayList_Event.get(i).get(1).equals("null")) {
                                 iv_Events[i].setAlpha(0.2f);
                                 iv_Events[i].setEnabled(false);
@@ -344,8 +341,8 @@ public class MainActivity extends AppCompatActivity {
                                 if (first) {
                                     first = false;
                                     tv_Description.setText(ArrayList_Event.get(i).get(3));
-                                } else{
-                                    toggleTwinkle(i, first);
+                                } else {
+                                    toggleTwinkle(i, false);
                                 }
                             }
                         }
@@ -377,8 +374,6 @@ public class MainActivity extends AppCompatActivity {
 
         PreferenceManager.setDefaultValues(this, R.xml.preferences, false);
         mSharedPref = PreferenceManager.getDefaultSharedPreferences(this);
-
-        Log.d(TAG,"Finish initialize");
     }
 
     /* 開啟 FloatingWindow */

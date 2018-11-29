@@ -9,11 +9,10 @@ import java.io.OutputStream;
 import java.net.HttpURLConnection;
 import java.net.URL;
 
-public class NetUtils {
-    // TODO: 不用一直改
+class NetUtils {
     private static final String Server = "http://140.127.208.227/";
 
-    public static String post(String url, String content) {
+    static String post(String url, String content) {
         HttpURLConnection conn = null;
         try {
             // 创建一个URL对象
@@ -53,7 +52,7 @@ public class NetUtils {
         return null;
     }
 
-    public static String get(String url) {
+    static String get(String url) {
         HttpURLConnection conn = null;
         try {
             // 利用string url构建URL对象
