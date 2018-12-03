@@ -193,8 +193,8 @@ public class FloatingWindow extends Service {
             public boolean handleMessage(Message message) {
                 switch (message.what) {
                     case Action.SET_TRAFFIC_LIGHT:
+                        tv_CountDown.setText(String.valueOf(mMyService.getCountDown()));
                         mProgressBar.setProgress(mMyService.getCountDown() - 1);
-                        String countDown = "";
 
                         switch (mMyService.getStatus()) {
                             case "Green":
@@ -209,7 +209,6 @@ public class FloatingWindow extends Service {
                                 if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
                                     mProgressBar.setProgressTintList(ColorStateList.valueOf(Color.RED));
                                 }
-                                countDown = String.valueOf(mMyService.getCountDown());
 
                                 break;
                             case "Yellow":
@@ -228,7 +227,6 @@ public class FloatingWindow extends Service {
 
                                 break;
                         }
-                        tv_CountDown.setText(countDown);
 
                         break;
                     case Action.SET_MAX_PROGRESS:

@@ -218,7 +218,7 @@ public class MainActivity extends AppCompatActivity {
                 switch (message.what) {
                     case Action.SET_TRAFFIC_LIGHT:
                         tv_CountDown.setTextColor(Color.BLACK);
-                        String countDown = "";
+                        tv_CountDown.setText(String.valueOf(mMyService.getCountDown()));
 
                         switch (mMyService.getStatus()) {
                             case "Green":
@@ -227,7 +227,6 @@ public class MainActivity extends AppCompatActivity {
                                 break;
                             case "Red":
                                 iv_TrafficLight.setImageResource(R.drawable.light_red);
-                                countDown = String.valueOf(mMyService.getCountDown());
 
                                 break;
                             case "Yellow":
@@ -243,7 +242,6 @@ public class MainActivity extends AppCompatActivity {
 
                                 break;
                         }
-                        tv_CountDown.setText(countDown);
 
                         iv_Start.setAlpha(1f);
                         iv_Start.setEnabled(true);
